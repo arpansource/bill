@@ -7,25 +7,48 @@ use clap::{Parser, Subcommand};
 use commands::summary::SummaryArgs;
 
 #[derive(Parser)]
-#[command(name = "bill")]
-#[command(about = "💸 Your personal finance CLI")]
+#[command(
+    name = "bill",
+    about = "💸 Personal finance CLI with smart budgeting",
+    version,
+    after_help = "Examples:\n  bill add\n  bill summary --today\n"
+)]
 struct Cli {
     #[command(subcommand)]
     command: Option<Commands>,
+
+    #[arg(short = 'v', long = "version", action = clap::ArgAction::SetTrue)]
+    version: bool,
 }
 
 #[derive(Subcommand)]
 enum Commands {
+    #[command(about = "Initialize storage")]
     Init,
+
+    #[command(about = "Add new expense")]
     Add,
+
+    #[command(about = "Manage categories")]
     Categories,
+
+    #[command(about = "Show summary (default monthly). Use --today flag to view today's summary")]
     Summary(SummaryArgs),
+
+    #[command(about = "Setup preferences (income, etc.)")]
     Setup,
+
+    #[command(about = "Remove all expenses")]
     Clean,
 }
 
 fn main() {
     let cli = Cli::parse();
+
+    if cli.version {
+        println!("bill {}", env!("CARGO_PKG_VERSION"));
+        return;
+    }
 
     match cli.command {
         Some(Commands::Init) => commands::init::run(),
@@ -41,17 +64,7 @@ fn main() {
         Some(Commands::Clean) => commands::clean::run(),
 
         None => {
-            println!("💸 bill - Personal Finance CLI\n");
-            println!("Run `bill init` to get started.\n");
-
-            println!("Available commands:");
-            println!("  init            Initialize storage");
-            println!("  add             Add new expense");
-            println!("  categories      Manage categories");
-            println!("  summary         Monthly summary (default)");
-            println!("  summary --today Today's summary");
-            println!("  set-warning     Set daily/monthly limits");
-            println!("  clean           Remove all expenses");
+            Cli::parse_from(["bill", "--help"]);
         }
     }
 }
