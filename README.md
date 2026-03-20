@@ -20,10 +20,8 @@ Built for consistency over complexity.
 
 ## 🚀 Installation
 
-### macOS (manual)
-
-Download the binary from [Releases](../../releases), then:
+### Linux/macOS
 
 ```bash
-chmod +x bill
-mv bill /usr/local/bin/bill
+curl -L https://raw.githubusercontent.com/arpansource/bill/main/install.sh | bash
+```
